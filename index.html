@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InteliBus - Sistema de Transporte Inteligente</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons (Substituindo Font Awesome) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Cores da Paleta */
+        :root {
+            --color-blue-sky: #0259DD; /* Botões / Mudança de rota */
+            --color-coral: #FF6648; /* Detalhes / Menu / Emergência */
+            --color-pastel-blue: #84AFFB; /* Fundo Conteúdo 1 */
+            --color-lime-green: #B7CF4F; /* Fundo Conteúdo 2 / Atraso */
+            --color-yellow-crowd: #E3BB1C; /* Superlotação */
+        }
+
+        /* Configurações Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Estilo do cabeçalho fixo */
+        header {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo de rolagem personalizado (opcional, para estética desktop) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--color-coral);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #e0e0e0;
+        }
+
+        /* Classes para as cores de status */
+        .status-rota { color: var(--color-blue-sky); }
+        .status-atraso { color: var(--color-lime-green); }
+        .status-superlotacao { color: var(--color-yellow-crowd); }
+        .status-emergencia { color: var(--color-coral); }
+
+        /* Estilo para garantir a altura total do main */
+        .main-content-container {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Header (Menu Nav - Padrão PC) -->
+    <header class="bg-white sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center max-w-7xl">
+            <!-- Logo -->
+            <div class="text-2xl font-bold text-gray-800 flex items-center">
+                <span class="text-[var(--color-coral)]">Inteli</span><span class="text-[var(--color-blue-sky)]">Bus</span>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex space-x-6 lg:space-x-10">
+                <a href="#inicial" onclick="navigate('3')" class="nav-link text-gray-700 hover:text-[var(--color-coral)] transition-colors duration-200 font-medium">Inicial</a>
+                <a href="#pontos" onclick="navigate('5')" class="nav-link text-gray-700 hover:text-[var(--color-coral)] transition-colors duration-200 font-medium">Pontos</a>
+                <a href="#linhas" onclick="navigate('7')" class="nav-link text-gray-700 hover:text-[var(--color-coral)] transition-colors duration-200 font-medium">Linhas</a>
+                <a href="#passes" onclick="navigate('9')" class="nav-link text-gray-700 hover:text-[var(--color-coral)] transition-colors duration-200 font-medium">Passes</a>
+                <a href="#sobre" onclick="navigate('15')" class="nav-link text-gray-700 hover:text-[var(--color-coral)] transition-colors duration-200 font-medium">Sobre</a>
+            </nav>
+
+            <!-- Perfil / Auth Button -->
+            <div class="flex items-center space-x-4">
+                <button id="profile-btn" onclick="navigate('10')" class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 relative">
+                    <i data-lucide="user" class="w-6 h-6 text-[var(--color-blue-sky)]"></i>
+                    <!-- Bolinha de Notificação (visível se houver notif) -->
+                    <span id="notification-dot" class="hidden absolute top-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-[var(--color-coral)]"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area (Centralizada, simulando a visualização de app/protótipo) -->
+    <main class="main-content-container container mx-auto px-4 py-8 flex-grow max-w-7xl">
+        <div id="content" class="bg-white p-6 md:p-10 rounded-xl shadow-lg min-h-[70vh] border border-gray-200">
+            <!-- O conteúdo das telas será injetado aqui pelo JavaScript -->
+            <h1 class="text-2xl font-semibold text-gray-700">Carregando...</h1>
+        </div>
+    </main>
+
+    <!-- Footer (Padrão PC) -->
+    <footer class="bg-gray-800 text-white mt-10">
+        <div class="container mx-auto px-4 py-10 max-w-7xl">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Coluna 1: Navegação -->
+                <div>
+                    <h3 class="font-semibold mb-3 text-[var(--color-coral)]">Navegação</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#inicial" onclick="navigate('3')" class="hover:text-[var(--color-lime-green)] transition-colors">Inicial</a></li>
+                        <li><a href="#pontos" onclick="navigate('5')" class="hover:text-[var(--color-lime-green)] transition-colors">Pontos</a></li>
+                        <li><a href="#linhas" onclick="navigate('7')" class="hover:text-[var(--color-lime-green)] transition-colors">Linhas</a></li>
+                        <li><a href="#passes" onclick="navigate('9')" class="hover:text-[var(--color-lime-green)] transition-colors">Passes</a></li>
+                        <li><a href="#sobre" onclick="navigate('15')" class="hover:text-[var(--color-lime-green)] transition-colors">Sobre</a></li>
+                    </ul>
+                </div>
+                <!-- Coluna 2: Ajuda e Suporte -->
+                <div>
+                    <h3 class="font-semibold mb-3 text-[var(--color-coral)]">Ajuda</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-[var(--color-lime-green)] transition-colors">Central de Ajuda</a></li>
+                        <li><a href="#" class="hover:text-[var(--color-lime-green)] transition-colors">Termos de Uso</a></li>
+                        <li><a href="#" class="hover:text-[var(--color-lime-green)] transition-colors">Política de Privacidade</a></li>
+                        <li><a href="#" class="hover:text-[var(--color-lime-green)] transition-colors">Fale Conosco</a></li>
+                    </ul>
+                </div>
+                <!-- Coluna 3: Contato -->
+                <div>
+                    <h3 class="font-semibold mb-3 text-[var(--color-coral)]">Contato</h3>
+                    <p class="text-sm">Email: contato@intelibus.com</p>
+                    <p class="text-sm">Telefone: (19) 5555-1234</p>
+                    <div class="flex space-x-3 mt-4">
+                        <i data-lucide="instagram" class="w-5 h-5 hover:text-[var(--color-lime-green)] cursor-pointer"></i>
+                        <i data-lucide="facebook" class="w-5 h-5 hover:text-[var(--color-lime-green)] cursor-pointer"></i>
+                        <i data-lucide="twitter" class="w-5 h-5 hover:text-[var(--color-lime-green)] cursor-pointer"></i>
+                    </div>
+                </div>
+                <!-- Coluna 4: Informações -->
+                <div class="col-span-2 md:col-span-1">
+                    <h3 class="font-semibold mb-3 text-[var(--color-coral)]">InteliBus</h3>
+                    <p class="text-sm">Sua solução inteligente para o transporte público. Monitore pontos, linhas e horários em tempo real.</p>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center text-sm text-gray-500">
+                © 2024 InteliBus. Todos os direitos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript para Lógica e Navegação -->
+    <script>
+        // Variáveis de Estado Global
+        let state = {
+            isLoggedIn: false,
+            currentView: '3', // Inicia na Tela Inicial (3)
+            hasNotifications: true, // Mock de notificação
+            user: {
+                nome: "Carlos Silva",
+                cpf: "123.456.789-00",
+                telefone: "(19) 98765-4321",
+                email: "carlos.silva@exemplo.com",
+            },
+            favorites: {
+                points: [
+                    { id: 'p1', name: 'P1 - Parque Taquaral', address: 'R. Adalberto Maia, 235 - Taquaral, Campinas - SP', icon: 'BusStop' },
+                    { id: 'p2', name: 'P2 - Centro', address: 'Av. Brasil, 5678 - Jardim Proença, Campinas - SP', icon: 'BusStop' }
+                ],
+                lines: [
+                    { id: 'l703', number: '703', point_address: 'R. Francisco Glicério, 1234 - Campinas - SP', icon: 'Bus' },
+                    { id: 'l510', number: '510', point_address: 'R. das Amoreiras, 876 - Taquaral, Campinas - SP', icon: 'Bus' }
+                ]
+            }
+        };
+
+        // Mock Data
+        const mockData = {
+            recentSearches: [
+                { type: 'line', value: '708 Campinas, SP', color: 'bg-blue-300' },
+                { type: 'line', value: '403 Campinas, SP', color: 'bg-[var(--color-lime-green)]' },
+                { type: 'line', value: '506 Campinas, SP', color: 'bg-blue-300' },
+                { type: 'point', value: 'Av. Brasil, 5678 - Jardim Proença', color: 'bg-[var(--color-lime-green)]' },
+                { type: 'point', value: 'R. Adalberto Maia, 235 - Taquaral', color: 'bg-blue-300' }
+            ],
+            pointsList: [
+                { id: 'p1', name: 'P1 - Parque Taquaral', address: 'R. Adalberto Maia, 235 - Taquaral, Campinas - SP', isFavorite: true, icon: 'BusStop' },
+                { id: 'p2', name: 'P2 - Centro', address: 'Av. Brasil, 5678 - Jardim Proença, Campinas - SP', isFavorite: false, icon: 'BusStop' },
+                { id: 'p3', name: 'P3 - Rodoviária', address: 'Av. Lix da Cunha, 100 - Campinas - SP', isFavorite: true, icon: 'BusStop' },
+            ],
+            linesList: [
+                { id: 'l703', number: '703', nextTime: '09:05', nextPoint: 'Parque Taquaral', isFavorite: true, icon: 'Bus' },
+                { id: 'l330', number: '330', nextTime: '09:10', nextPoint: 'Centro', isFavorite: false, icon: 'Bus' },
+                { id: 'l510', number: '510', nextTime: '09:35', nextPoint: 'Rodoviária', isFavorite: true, icon: 'Bus' },
+                { id: 'l760', number: '760', nextTime: '09:45', nextPoint: 'Moura', isFavorite: false, icon: 'Bus' },
+            ],
+            pointDetail: {
+                name: 'P1 - Parque Taquaral',
+                address: 'R. Adalberto Maia, 235 - Taquaral, Campinas - SP',
+                lines: [
+                    { number: '703', cost: 'R$ 6,50', times: ['17:00', '17:15', '17:30', '17:45', '18:00'], iconColor: 'text-[var(--color-lime-green)]' },
+                    { number: '709', cost: 'R$ 6,50', times: ['17:00', '17:00', '17:00', '17:00', '17:30'], iconColor: 'text-[var(--color-pastel-blue)]' },
+                    { number: '710', cost: 'R$ 6,50', times: ['17:00', '17:15', '17:30', '17:45', '18:00'], iconColor: 'text-[var(--color-lime-green)]' },
+                ]
+            },
+            lineDetail: {
+                number: '705',
+                points: [
+                    { address: 'R. Adalberto Maia, 235 - Taquaral', times: ['09:05', '09:35', '10:05', '10:35'], status: 'atraso', icon: 'BusStop' },
+                    { address: 'R. Francisco Glicério, 1234 - Centro', times: ['09:05', '09:35', '10:05', '10:35'], status: 'superlotacao', icon: 'BusStop' },
+                    { address: 'Av. Brasil, 5678 - Jd Proença', times: ['11:05', '11:35', '12:05', '12:35'], status: 'emergencia', icon: 'BusStop' },
+                    { address: 'R. das Amoreiras, 876 - Taquaral', times: ['13:05', '13:35', '14:05', '14:35'], status: 'rota', icon: 'BusStop' },
+                ]
+            },
+            notifications: [
+                { line: '703', date: 'Hoje', time: '17:00', status: 'atraso', message: 'Previsão de 10 minutos de atraso devido ao trânsito.', expected: '17:10' },
+                { line: '510', date: 'Ontem', time: '08:30', status: 'superlotacao', message: 'Alto índice de lotação no ponto X. Considere a próxima linha.', expected: '08:45' },
+                { line: '330', date: 'Hoje', time: '12:00', status: 'rota', message: 'Mudança de rota temporária devido a obras na R. Y.', expected: '12:05' },
+            ]
+        };
+
+        // Função utilitária para ícones
+        function getIcon(name, classes = 'w-5 h-5') {
+            return `<i data-lucide="${name}" class="${classes}"></i>`;
+        }
+
+        // Função utilitária para renderizar os status
+        function renderStatusIcon(status) {
+            let iconName = 'Info';
+            let classes = '';
+            switch (status) {
+                case 'rota':
+                    iconName = 'Replace';
+                    classes = 'status-rota';
+                    break;
+                case 'atraso':
+                    iconName = 'Clock';
+                    classes = 'status-atraso';
+                    break;
+                case 'superlotacao':
+                    iconName = 'Users';
+                    classes = 'status-superlotacao';
+                    break;
+                case 'emergencia':
+                    iconName = 'AlertTriangle';
+                    classes = 'status-emergencia';
+                    break;
+            }
+            return `<i data-lucide="${iconName}" class="w-5 h-5 ${classes}"></i>`;
+        }
+
+        // Função de navegação principal
+        function navigate(viewId, detailId = null) {
+            const viewMap = {
+                '1': 'cadastro', '2': 'login', '3': 'inicial', '4': 'pesquisa', '5': 'pontos',
+                '6': 'ponto_detalhe', '7': 'linhas', '8': 'linha_detalhe', '9': 'passes', '10': 'perfil',
+                '11': 'info_conta', '12': 'notificacoes', '13': 'favoritos', '14': 'agendamento', '15': 'sobre'
+            };
+
+            const viewName = viewMap[viewId];
+            if (!viewName) return console.error("View ID inválido:", viewId);
+
+            state.currentView = viewId;
+            // Atualiza a URL sem recarregar
+            window.history.pushState(null, null, `#${viewName}`);
+            renderApp(detailId);
+        }
+
+        // Funções de TELA (Content Generators)
+
+        // Tela 1: Cadastro
+        function renderCadastro() {
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Cadastro</h2>
+                <form onsubmit="handleRegistration(event)">
+                    ${renderFormInput('Nome de usuário', 'text', 'nome', 'John Doe')}
+                    ${renderFormInput('CPF', 'text', 'cpf', '000.000.000-00')}
+                    ${renderFormInput('Telefone', 'tel', 'telefone', '(00) 00000-0000')}
+                    ${renderFormInput('E-mail', 'email', 'email', 'email@exemplo.com')}
+                    ${renderFormInput('Senha', 'password', 'senha', '********')}
+                    ${renderFormInput('Confirmar senha', 'password', 'confirmar_senha', '********')}
+                    <button type="submit" class="w-full bg-[var(--color-blue-sky)] text-white font-semibold p-3 rounded-xl mt-6 hover:bg-blue-700 transition duration-200 shadow-md">
+                        Cadastrar
+                    </button>
+                </form>
+            `;
+        }
+
+        // Tela 2: Login
+        function renderLogin() {
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Login</h2>
+                <form onsubmit="handleLogin(event)">
+                    ${renderFormInput('E-mail / CPF', 'text', 'login_id', 'email@exemplo.com ou CPF')}
+                    ${renderFormInput('Senha', 'password', 'senha', '********')}
+                    <a href="#" class="text-sm text-[var(--color-blue-sky)] hover:underline mb-4 block text-right">Esqueceu a senha?</a>
+                    <button type="submit" class="w-full bg-[var(--color-blue-sky)] text-white font-semibold p-3 rounded-xl mt-4 hover:bg-blue-700 transition duration-200 shadow-md">
+                        Entrar
+                    </button>
+                </form>
+            `;
+        }
+
+        // Tela 3: Inicial
+        function renderInicial() {
+            const pointItem = (name, address, icon, color) => `
+                <div class="flex items-center p-3 mb-2 rounded-lg bg-white shadow-sm hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200">
+                    <div class="p-3 rounded-xl ${color} mr-4">${getIcon(icon, 'w-6 h-6 text-white')}</div>
+                    <div>
+                        <p class="font-semibold text-gray-800">${name}</p>
+                        <p class="text-sm text-gray-500">${address}</p>
+                    </div>
+                </div>
+            `;
+
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Boas-vindas, ${state.user.nome.split(' ')[0]}!</h2>
+                
+                <!-- Campos de Pesquisa -->
+                <div class="mb-8 p-4 rounded-xl shadow-lg bg-gray-50 border border-gray-200">
+                    <div class="flex flex-col space-y-3">
+                        ${renderSearchInput('Localização Atual (Mock)', 'Sua Posição Aqui', 'map-pin', 'bg-[var(--color-lime-green)]')}
+                        ${renderSearchInput('Onde você quer ir?', 'Destino ou Ponto', 'search', 'bg-[var(--color-blue-sky)]', "navigate('4')")}
+                    </div>
+                </div>
+
+                <!-- Mapa Mock -->
+                <div class="w-full h-96 bg-gray-300 rounded-xl mb-8 flex items-center justify-center relative shadow-inner">
+                    <img src="https://placehold.co/700x400/84AFFB/ffffff?text=MAPA+Mock+%5C%26+Pontos+Próximos" alt="Mapa de pontos e localização" class="rounded-xl w-full h-full object-cover">
+                    <button class="absolute bottom-4 right-4 bg-white p-3 rounded-full shadow-lg hover:bg-gray-100 transition-colors" title="Expandir Mapa">
+                        ${getIcon('Maximize', 'w-5 h-5')}
+                    </button>
+                </div>
+
+                <!-- Abas: Pontos Próximos / Favoritos -->
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Aba Pontos Próximos -->
+                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-md">
+                        <h3 class="text-xl font-semibold mb-4 text-[var(--color-blue-sky)]">Pontos Próximos</h3>
+                        <div class="space-y-3 max-h-60 overflow-y-auto">
+                            ${pointItem('Av. Brasil, 5678', 'Jardim Proença, Campinas - SP', 'Pin', 'bg-[var(--color-lime-green)]')}
+                            ${pointItem('R. Adalberto Maia, 235', 'Taquaral, Campinas - SP', 'Pin', 'bg-[var(--color-pastel-blue)]')}
+                        </div>
+                    </div>
+
+                    <!-- Aba Favoritos -->
+                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-md">
+                        <h3 class="text-xl font-semibold mb-4 text-[var(--color-coral)]">Favoritos (${state.favorites.points.length + state.favorites.lines.length})</h3>
+                        <div class="space-y-3 max-h-60 overflow-y-auto">
+                            <!-- Favoritos - Pontos -->
+                            ${state.favorites.points.map(p => pointItem(p.name, p.address, p.icon, 'bg-[var(--color-pastel-blue)]')).join('')}
+                            <!-- Favoritos - Linhas -->
+                            ${state.favorites.lines.map(l => pointItem(`Linha ${l.number}`, `Ponto: ${l.point_address}`, l.icon, 'bg-[var(--color-lime-green)]')).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Tela 4: Pesquisa
+        function renderPesquisa() {
+            const searchItem = (item) => `
+                <div class="flex items-center p-3 mb-2 rounded-lg bg-white shadow-sm border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors" onclick="navigate('3')">
+                    <div class="p-2 rounded-xl ${item.color} mr-4">${getIcon(item.type === 'line' ? 'Bus' : 'Pin', 'w-5 h-5 text-white')}</div>
+                    <p class="font-medium text-gray-700">${item.value}</p>
+                </div>
+            `;
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Buscar Rota</h2>
+                
+                <div class="mb-8 p-4 rounded-xl shadow-lg bg-gray-50 border border-gray-200">
+                    <div class="flex flex-col space-y-3 relative">
+                        ${renderSearchInput('Partida', 'Sua Localização', 'map-pin', 'bg-[var(--color-lime-green)]', '', 'start-point')}
+                        <div class="absolute top-1/2 left-3 transform -translate-y-1/2 cursor-pointer p-1 rounded-full bg-white shadow-md" onclick="swapSearchFields()">
+                            ${getIcon('SwitchVertical', 'w-4 h-4 text-gray-600')}
+                        </div>
+                        ${renderSearchInput('Destino', 'Para onde você vai?', 'map-pin', 'bg-[var(--color-blue-sky)]', '', 'end-point')}
+                    </div>
+                    <button class="w-full bg-[var(--color-blue-sky)] text-white font-semibold p-3 rounded-xl mt-6 hover:bg-blue-700 transition duration-200 shadow-md">
+                        Buscar Linha/Ponto
+                    </button>
+                </div>
+
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Pesquisas Recentes</h3>
+                <div class="space-y-3">
+                    ${mockData.recentSearches.map(searchItem).join('')}
+                </div>
+            `;
+        }
+
+        // Tela 5: Pontos
+        function renderPontos() {
+            const pointItem = (point) => `
+                <div class="p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200 mb-4 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center" onclick="navigate('6', '${point.id}')">
+                            <div class="p-3 rounded-xl ${point.isFavorite ? 'bg-[var(--color-lime-green)]' : 'bg-[var(--color-pastel-blue)]'} mr-4 cursor-pointer">
+                                ${getIcon(point.icon, 'w-6 h-6 text-white')}
+                            </div>
+                            <div>
+                                <p class="font-bold text-lg text-gray-800 cursor-pointer hover:text-[var(--color-coral)]">${point.name}</p>
+                                <p class="text-sm text-gray-500 mt-1">${point.address}</p>
+                            </div>
+                        </div>
+                        <i data-lucide="star" class="w-6 h-6 ${point.isFavorite ? 'fill-[var(--color-coral)] text-[var(--color-coral)]' : 'text-gray-400 hover:text-[var(--color-coral)]'}" onclick="toggleFavorite('point', '${point.id}')"></i>
+                    </div>
+                </div>
+            `;
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Pontos de Ônibus</h2>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex space-x-4">
+                        <button onclick="navigate('4')" class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors" title="Pesquisar">
+                            ${getIcon('Search', 'w-5 h-5')}
+                        </button>
+                        <button class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors" title="Filtrar Favoritos">
+                            ${getIcon('Filter', 'w-5 h-5 text-[var(--color-coral)]')}
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-500">Exibindo ${mockData.pointsList.length} pontos</p>
+                </div>
+                <div class="space-y-4">
+                    ${mockData.pointsList.map(pointItem).join('<div class="h-px bg-gray-200 my-4"></div>')}
+                </div>
+            `;
+        }
+
+        // Tela 6: Individual do Ponto
+        function renderPontoDetalhe(id) {
+            const point = mockData.pointDetail;
+            const lineItem = (line) => `
+                <div class="p-4 rounded-xl bg-white shadow-sm border border-gray-200 mb-3">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="flex items-center">
+                            <div class="p-2 rounded-lg ${line.iconColor} mr-3">${getIcon('Bus', 'w-6 h-6')}</div>
+                            <p class="font-bold text-xl text-gray-800">Linha ${line.number}</p>
+                        </div>
+                        <div class="text-sm font-medium text-gray-600 flex items-center">
+                            ${line.cost}
+                            <i data-lucide="Info" class="w-4 h-4 ml-2 text-gray-400 cursor-pointer hover:text-[var(--color-coral)]"></i>
+                        </div>
+                    </div>
+                    <p class="text-md font-semibold text-gray-700 mb-2">Próximos horários:</p>
+                    <div class="flex flex-wrap gap-2">
+                        ${line.times.map(time => `<span class="px-3 py-1 bg-gray-100 rounded-lg text-sm font-medium text-gray-700 border border-gray-300">${time}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Detalhe do Ponto</h2>
+                <div class="flex justify-between items-start p-4 rounded-xl bg-gray-50 shadow-md border border-gray-200 mb-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-xl bg-[var(--color-pastel-blue)] mr-4">
+                            ${getIcon('Pin', 'w-8 h-8 text-white')}
+                        </div>
+                        <div>
+                            <p class="font-bold text-xl text-gray-800">${point.name}</p>
+                            <p class="text-sm text-gray-500 mt-1">${point.address}</p>
+                        </div>
+                    </div>
+                    <i data-lucide="star" class="w-7 h-7 fill-[var(--color-coral)] text-[var(--color-coral)] cursor-pointer"></i>
+                </div>
+
+                <button class="flex items-center justify-center bg-[var(--color-blue-sky)] text-white font-semibold p-3 rounded-xl mb-6 w-full hover:bg-blue-700 transition duration-200 shadow-md">
+                    ${getIcon('Map', 'w-5 h-5 mr-2')} Como chegar nesse ponto
+                </button>
+
+                <div class="h-px bg-gray-300 mb-6"></div>
+
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Linhas Disponíveis</h3>
+                <div class="space-y-4">
+                    ${point.lines.map(lineItem).join('')}
+                </div>
+            `;
+        }
+
+        // Tela 7: Linhas
+        function renderLinhas() {
+            const lineItem = (line) => `
+                <div class="p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200 mb-4 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col flex-grow min-w-0" onclick="navigate('8', '${line.id}')">
+                            <div class="flex items-center mb-1 cursor-pointer hover:text-[var(--color-coral)]">
+                                <div class="p-2 rounded-lg bg-[var(--color-pastel-blue)] mr-3">${getIcon(line.icon, 'w-6 h-6 text-white')}</div>
+                                <p class="font-bold text-2xl text-gray-800">Linha ${line.number}</p>
+                                <i data-lucide="star" class="w-6 h-6 ml-auto ${line.isFavorite ? 'fill-[var(--color-coral)] text-[var(--color-coral)]' : 'text-gray-400 hover:text-[var(--color-coral)]'}" onclick="event.stopPropagation(); toggleFavorite('line', '${line.id}')"></i>
+                            </div>
+                            <div class="ml-[46px]">
+                                <p class="text-sm text-gray-600">Próximo: <span class="font-semibold text-base text-[var(--color-coral)]">${line.nextTime}</span> em ${line.nextPoint}</p>
+                                <button class="mt-2 text-sm text-white bg-[var(--color-blue-sky)] px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors">
+                                    Chegar no ponto mais próximo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Linhas de Ônibus</h2>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex space-x-4">
+                        <button onclick="navigate('4')" class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors" title="Pesquisar">
+                            ${getIcon('Search', 'w-5 h-5')}
+                        </button>
+                        <button class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors" title="Filtrar Favoritos">
+                            ${getIcon('Filter', 'w-5 h-5 text-[var(--color-coral)]')}
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-500">Exibindo ${mockData.linesList.length} linhas</p>
+                </div>
+                <div class="space-y-4">
+                    ${mockData.linesList.map(lineItem).join('<div class="h-px bg-gray-200 my-4"></div>')}
+                </div>
+            `;
+        }
+
+        // Tela 8: Individual da Linha
+        function renderLinhaDetalhe(id) {
+            const line = mockData.lineDetail;
+            const pointItem = (point) => `
+                <div class="p-4 rounded-xl bg-white shadow-sm border border-gray-200 mb-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-start">
+                            <div class="p-3 rounded-xl bg-[var(--color-pastel-blue)] mr-4">
+                                ${getIcon(point.icon, 'w-6 h-6 text-white')}
+                            </div>
+                            <div class="flex-grow">
+                                <p class="font-bold text-lg text-gray-800">${point.address}</p>
+                                <p class="text-sm font-semibold text-gray-700 mt-2">Horários de Passagem:</p>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    ${point.times.map(time => `<span class="px-3 py-1 bg-gray-100 rounded-lg text-sm font-medium text-gray-700 border border-gray-300">${time}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="showStatusModal('${point.status}')" class="p-1 rounded-full hover:bg-gray-100 transition-colors">
+                            ${renderStatusIcon(point.status)}
+                        </button>
+                    </div>
+                </div>
+            `;
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Detalhe da Linha ${line.number}</h2>
+                <div class="flex justify-between items-start p-4 rounded-xl bg-gray-50 shadow-md border border-gray-200 mb-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-xl bg-[var(--color-lime-green)] mr-4">
+                            ${getIcon('Bus', 'w-8 h-8 text-white')}
+                        </div>
+                        <p class="font-bold text-2xl text-gray-800">Linha ${line.number}</p>
+                    </div>
+                    <i data-lucide="star" class="w-7 h-7 fill-[var(--color-coral)] text-[var(--color-coral)] cursor-pointer"></i>
+                </div>
+
+                <div class="h-px bg-gray-300 mb-6"></div>
+
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Pontos em que a linha passa</h3>
+                <div class="space-y-4">
+                    ${line.points.map(pointItem).join('')}
+                </div>
+                ${renderStatusModal()}
+            `;
+        }
+
+        // Tela 9: Passes
+        function renderPasses() {
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Meus Passes</h2>
+                <div class="bg-gray-50 p-6 rounded-xl shadow-md border border-gray-200">
+                    <!-- Abas: Físico vs Virtual -->
+                    <div class="flex mb-6 border-b border-gray-200">
+                        <button class="pb-2 px-4 text-lg font-semibold border-b-2 border-[var(--color-blue-sky)] text-[var(--color-blue-sky)]">
+                            Passe Físico
+                        </button>
+                        <button class="pb-2 px-4 text-lg font-semibold text-gray-500 hover:text-gray-700 transition-colors">
+                            Carteira Virtual
+                        </button>
+                    </div>
+
+                    <!-- Tipo de Passe -->
+                    <div class="mb-6">
+                        <label for="pass-type" class="block text-sm font-medium text-gray-700">Tipo de Passe:</label>
+                        <select id="pass-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[var(--color-coral)] focus:border-[var(--color-coral)] sm:text-sm rounded-md shadow-sm">
+                            <option>Passe de Estudante</option>
+                            <option>Passe Comum</option>
+                        </select>
+                    </div>
+
+                    <!-- Foto Passe (Mock) -->
+                    <div class="w-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl p-6 shadow-xl text-white mb-6">
+                        <div class="text-xl font-bold mb-4">Bilhete Único - <span class="text-[var(--color-lime-green)]">InteliBus</span></div>
+                        <img src="https://placehold.co/100x60/84AFFB/ffffff?text=FOTO+PASSE" alt="Foto do Passe" class="w-24 h-16 rounded-lg float-right ml-4 mb-2">
+                        <p class="text-lg font-mono">XXXX XXXX XXXX XXXX</p>
+                        <p class="text-sm mt-1">${state.user.nome}</p>
+                    </div>
+
+                    <!-- Saldo -->
+                    <div class="mb-8 p-4 bg-white rounded-lg border border-gray-200 shadow-inner">
+                        <p class="text-lg font-medium text-gray-700">Saldo Atual:</p>
+                        <p class="text-4xl font-extrabold text-[var(--color-lime-green)] mt-1">R$ 45,75</p>
+                    </div>
+
+                    <!-- Ações -->
+                    <div class="space-y-4">
+                        <button class="w-full bg-[var(--color-blue-sky)] text-white font-semibold p-3 rounded-xl hover:bg-blue-700 transition duration-200 shadow-md">
+                            Recarregar
+                        </button>
+                        <button class="w-full bg-[var(--color-coral)] text-white font-semibold p-3 rounded-xl hover:bg-red-500 transition duration-200 shadow-md">
+                            Histórico
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Tela 10: Perfil (Condicional)
+        function renderPerfil() {
+            if (state.isLoggedIn) {
+                return renderLoggedInProfile();
+            } else {
+                return renderLoggedOutProfile();
+            }
+        }
+
+        function renderLoggedInProfile() {
+            const profileLink = (text, viewId, icon, hasNotification = false) => `
+                <div onclick="navigate('${viewId}')" class="flex items-center justify-between p-4 mb-3 rounded-xl bg-white shadow-sm border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center">
+                        <div class="p-2 rounded-lg bg-[var(--color-pastel-blue)] mr-4 relative">
+                            ${getIcon(icon, 'w-6 h-6 text-white')}
+                            ${hasNotification ? `<span class="absolute top-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-[var(--color-coral)]"></span>` : ''}
+                        </div>
+                        <p class="font-semibold text-lg text-gray-700">${text}</p>
+                    </div>
+                    ${getIcon('ChevronRight', 'w-6 h-6 text-gray-400')}
+                </div>
+            `;
+
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Meu Perfil</h2>
+                <div class="p-6 rounded-xl shadow-lg border border-gray-200 bg-gray-50 space-y-4">
+                    ${profileLink('Informações da Conta', '11', 'Settings')}
+                    ${profileLink('Notificações', '12', 'Bell', state.hasNotifications)}
+                    ${profileLink('Favoritos', '13', 'Star')}
+                    ${profileLink('Agendamento', '14', 'CalendarCheck')}
+                    ${profileLink('Ver Passes', '9', 'CreditCard')}
+                    <div onclick="handleLogout()" class="flex items-center justify-between p-4 mb-3 rounded-xl bg-white shadow-sm border border-gray-200 cursor-pointer hover:bg-red-50 transition-colors">
+                        <div class="flex items-center">
+                            <div class="p-2 rounded-lg bg-gray-500 mr-4">
+                                ${getIcon('LogOut', 'w-6 h-6 text-white')}
+                            </div>
+                            <p class="font-semibold text-lg text-gray-700">Sair</p>
+                        </div>
+                        ${getIcon('ChevronRight', 'w-6 h-6 text-gray-400')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLoggedOutProfile() {
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Bem-vindo(a) à InteliBus</h2>
+                <div class="text-center p-8 rounded-xl shadow-lg border border-gray-200 bg-gray-50">
+                    <!-- Banner Mock -->
+                    <div class="w-full h-40 bg-[var(--color-pastel-blue)] rounded-xl mb-6 flex flex-col items-center justify-center p-4">
+                        <i data-lucide="BusFront" class="w-12 h-12 text-white mb-2"></i>
+                        <p class="text-lg font-semibold text-white">Sua jornada mais fácil e inteligente!</p>
+                    </div>
+                    
+                    <p class="text-gray-700 mb-6">Acesse sua conta para gerenciar seus favoritos, agendamentos e notificações em tempo real.</p>
+                    
+                    <div class="space-y-4 max-w-sm mx-auto">
+                        <button onclick="navigate('1')" class="w-full bg-[var(--color-coral)] text-white font-semibold p-3 rounded-xl hover:bg-red-500 transition duration-200 shadow-md">
+                            ${getIcon('UserPlus', 'w-5 h-5 mr-2 inline-block')} Cadastrar
+                        </button>
+                        <button onclick="navigate('2')" class="w-full border-2 border-[var(--color-blue-sky)] text-[var(--color-blue-sky)] font-semibold p-3 rounded-xl hover:bg-blue-50 transition duration-200 shadow-md">
+                            ${getIcon('LogIn', 'w-5 h-5 mr-2 inline-block')} Entrar
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Tela 11: Informações da Conta
+        function renderInfoConta() {
+            const infoItem = (label, value) => `
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <p class="text-sm font-medium text-gray-500">${label}</p>
+                    <p class="text-lg font-semibold text-gray-800">${value}</p>
+                </div>
+            `;
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Informações da Conta</h2>
+                <div class="flex flex-col items-center mb-6">
+                    <img src="https://placehold.co/120x120/84AFFB/ffffff?text=${state.user.nome.charAt(0)}" alt="Foto de Perfil" class="w-28 h-28 rounded-full border-4 border-white shadow-lg object-cover bg-gray-300">
+                    <button class="mt-2 text-sm text-[var(--color-blue-sky)] hover:underline flex items-center">
+                        ${getIcon('Edit', 'w-4 h-4 mr-1')} Editar Foto
+                    </button>
+                </div>
+                
+                <div class="space-y-4 p-6 rounded-xl shadow-lg border border-gray-200 bg-gray-50">
+                    ${infoItem('Nome de Usuário', state.user.nome)}
+                    ${infoItem('CPF', state.user.cpf)}
+                    ${infoItem('Telefone', state.user.telefone)}
+                    ${infoItem('E-mail', state.user.email)}
+                    <button class="text-sm text-[var(--color-coral)] hover:underline mt-4">Alterar Senha</button>
+                </div>
+            `;
+        }
+
+        // Tela 12: Notificações
+        function renderNotificacoes() {
+            const notificationItem = (notif) => `
+                <div class="p-4 rounded-xl bg-white shadow-md border border-gray-200 mb-4 cursor-pointer" onclick="toggleNotificationDetails(this)">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-xl bg-[var(--color-pastel-blue)] mr-4 relative">
+                                ${getIcon('Bus', 'w-6 h-6 text-white')}
+                                <span class="absolute top-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-[var(--color-coral)]"></span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-lg text-gray-800">Linha ${notif.line} - ${notif.date} - ${notif.time}</p>
+                            </div>
+                        </div>
+                        <button onclick="event.stopPropagation(); showStatusModal('${notif.status}')" class="p-1 rounded-full hover:bg-gray-100 transition-colors">
+                            ${renderStatusIcon(notif.status)}
+                        </button>
+                    </div>
+                    <!-- Caixa de Mensagem Personalizada -->
+                    <div class="mt-3 p-3 bg-gray-100 rounded-lg hidden notification-details">
+                        <p class="text-gray-700">${notif.message}</p>
+                        <p class="text-sm font-semibold text-[var(--color-lime-green)] mt-2">Previsão de Chegada: ${notif.expected}</p>
+                    </div>
+                </div>
+            `;
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Minhas Notificações</h2>
+                <div class="space-y-4">
+                    ${mockData.notifications.map(notificationItem).join('')}
+                </div>
+                ${renderStatusModal()}
+            `;
+        }
+
+        // Tela 13: Favoritos
+        function renderFavoritos() {
+            const favLineItem = (line) => `
+                <div class="p-4 rounded-xl bg-white shadow-sm border border-gray-200 flex justify-between items-center mb-3">
+                    <div class="flex items-start flex-grow min-w-0">
+                        <div class="p-3 rounded-xl bg-[var(--color-lime-green)] mr-4">${getIcon('Bus', 'w-6 h-6 text-white')}</div>
+                        <div onclick="navigate('8', '${line.id}')" class="cursor-pointer hover:text-[var(--color-coral)]">
+                            <p class="font-bold text-lg text-gray-800">Linha ${line.number}</p>
+                            <p class="text-sm text-gray-500">Ponto: ${line.point_address}</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="p-2 rounded-full hover:bg-gray-100 text-[var(--color-blue-sky)]" title="Editar Ponto">
+                            ${getIcon('Edit', 'w-5 h-5')}
+                        </button>
+                        <button onclick="toggleFavorite('line', '${line.id}')" class="p-2 rounded-full hover:bg-gray-100 text-[var(--color-coral)]" title="Desfavoritar">
+                            ${getIcon('Star', 'w-5 h-5 fill-[var(--color-coral)]')}
+                        </button>
+                    </div>
+                </div>
+            `;
+            const favPointItem = (point) => `
+                <div class="p-4 rounded-xl bg-white shadow-sm border border-gray-200 flex justify-between items-center mb-3">
+                    <div class="flex items-start flex-grow min-w-0">
+                        <div class="p-3 rounded-xl bg-[var(--color-pastel-blue)] mr-4">${getIcon('Pin', 'w-6 h-6 text-white')}</div>
+                        <div onclick="navigate('6', '${point.id}')" class="cursor-pointer hover:text-[var(--color-coral)]">
+                            <p class="font-bold text-lg text-gray-800">${point.name}</p>
+                            <p class="text-sm text-gray-500">${point.address}</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="p-2 rounded-full hover:bg-gray-100 text-[var(--color-blue-sky)]" title="Editar Nome">
+                            ${getIcon('Edit', 'w-5 h-5')}
+                        </button>
+                        <button onclick="toggleFavorite('point', '${point.id}')" class="p-2 rounded-full hover:bg-gray-100 text-[var(--color-coral)]" title="Desfavoritar">
+                            ${getIcon('Star', 'w-5 h-5 fill-[var(--color-coral)]')}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Meus Favoritos</h2>
+                
+                <!-- Abas: Linhas / Pontos -->
+                <div class="flex mb-6 border-b border-gray-200">
+                    <button id="tab-linhas" onclick="switchFavoriteTab('linhas')" class="tab-button pb-2 px-4 text-lg font-semibold border-b-2 border-[var(--color-blue-sky)] text-[var(--color-blue-sky)] transition-all duration-300">
+                        Linhas (${state.favorites.lines.length})
+                    </button>
+                    <button id="tab-pontos" onclick="switchFavoriteTab('pontos')" class="tab-button pb-2 px-4 text-lg font-semibold text-gray-500 hover:text-gray-700 transition-all duration-300">
+                        Pontos (${state.favorites.points.length})
+                    </button>
+                </div>
+                
+                <div id="favorite-content-linhas" class="space-y-4">
+                    ${state.favorites.lines.length > 0 ? state.favorites.lines.map(favLineItem).join('') : '<p class="text-gray-500">Você não tem linhas favoritas.</p>'}
+                </div>
+                
+                <div id="favorite-content-pontos" class="space-y-4 hidden">
+                    ${state.favorites.points.length > 0 ? state.favorites.points.map(favPointItem).join('') : '<p class="text-gray-500">Você não tem pontos favoritos.</p>'}
+                </div>
+            `;
+        }
+
+        // Tela 14: Agendamento
+        function renderAgendamento() {
+            const selectOption = (label, id) => `
+                <div class="mb-4">
+                    <label for="${id}" class="block text-sm font-medium text-gray-700">${label}</label>
+                    <select id="${id}" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[var(--color-coral)] focus:border-[var(--color-coral)] sm:text-sm rounded-md shadow-sm">
+                        <option value="">Selecione...</option>
+                        <option>P1 - Parque Taquaral</option>
+                        <option>Linha 703</option>
+                        <option>07:00</option>
+                        <option>P2 - Centro</option>
+                    </select>
+                </div>
+            `;
+
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Agendamento de Viagem</h2>
+                <div class="bg-gray-50 p-6 rounded-xl shadow-lg border border-gray-200">
+                    <p class="text-gray-700 mb-6">Programe sua viagem para receber notificações e garantir seu embarque!</p>
+                    
+                    <form onsubmit="handleAgendamento(event)">
+                        ${selectOption('Ponto de Embarque', 'ponto_embarque')}
+                        ${selectOption('Linha de Embarque', 'linha_embarque')}
+                        ${selectOption('Horário de Embarque', 'horario_embarque')}
+                        ${selectOption('Ponto de Desembarque', 'ponto_desembarque')}
+                        ${selectOption('Expectativa do Horário de Desembarque (Estimado)', 'horario_desembarque')}
+                        
+                        <button type="submit" class="w-full bg-[var(--color-blue-sky)] text-white font-semibold p-3 rounded-xl mt-6 hover:bg-blue-700 transition duration-200 shadow-md">
+                            ${getIcon('Clock', 'w-5 h-5 mr-2 inline-block')} Agendar Viagem
+                        </button>
+                    </form>
+                </div>
+            `;
+        }
+
+        // Tela 15: Sobre
+        function renderSobre() {
+            return `
+                <h2 class="text-3xl font-bold mb-8 text-[var(--color-coral)]">Sobre a InteliBus</h2>
+                
+                <div class="mb-8 p-6 rounded-xl shadow-lg border border-gray-200 bg-gray-50">
+                    <h3 class="text-xl font-semibold mb-3 text-[var(--color-blue-sky)]">Nossa Missão</h3>
+                    <p class="text-gray-700">A InteliBus nasceu com o propósito de transformar a experiência do transporte público, tornando-a mais previsível, segura e eficiente. Utilizamos tecnologia de ponta para oferecer informações em tempo real sobre a localização de ônibus, horários, superlotação e alertas de emergência.</p>
+                </div>
+
+                <div class="w-full h-96 bg-gray-300 rounded-xl mb-8 flex items-center justify-center shadow-inner">
+                    <img src="https://placehold.co/700x400/FF6648/ffffff?text=VÍDEO+PITCH+Mock" alt="Vídeo Pitch Placeholder" class="rounded-xl w-full h-full object-cover">
+                </div>
+                
+                <div class="p-6 rounded-xl shadow-lg border border-gray-200 bg-gray-50">
+                    <h3 class="text-xl font-semibold mb-3 text-[var(--color-blue-sky)]">Nossa Tecnologia</h3>
+                    <p class="text-gray-700">Com o InteliBus, você tem o controle na palma da sua mão. Chega de esperas intermináveis no ponto! Nossa plataforma integra dados de GPS e informações operacionais para fornecer a você a melhor experiência de viagem.</p>
+                </div>
+            `;
+        }
+
+        // --- Funções de Componentes e Helpers ---
+
+        // Input genérico para formulários
+        function renderFormInput(label, type, id, placeholder) {
+            return `
+                <div class="mb-4">
+                    <label for="${id}" class="block text-sm font-medium text-gray-700">${label}</label>
+                    <input type="${type}" id="${id}" placeholder="${placeholder}" class="mt-1 block w-full p-3 border border-gray-300 rounded-xl shadow-sm focus:border-[var(--color-coral)] focus:ring-[var(--color-coral)] transition duration-150">
+                </div>
+            `;
+        }
+
+        // Input de Pesquisa para Tela Inicial/Pesquisa
+        function renderSearchInput(label, placeholder, icon, color, onClickAction = '', elementId = '') {
+            return `
+                <div class="relative" ${onClickAction ? `onclick="${onClickAction}"` : ''}>
+                    <label class="sr-only">${label}</label>
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div class="p-1 rounded-full ${color} text-white">
+                            ${getIcon(icon, 'w-4 h-4')}
+                        </div>
+                    </div>
+                    <input type="text" id="${elementId}" placeholder="${placeholder}" readonly="${onClickAction ? 'true' : 'false'}" 
+                        class="block w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl shadow-sm bg-white cursor-${onClickAction ? 'pointer' : 'default'} text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--color-coral)]">
+                </div>
+            `;
+        }
+
+        // Modal para Status (Usado nas telas 8 e 12)
+        function renderStatusModal() {
+            return `
+                <div id="status-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden" onclick="closeStatusModal()">
+                    <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full" onclick="event.stopPropagation()">
+                        <div id="modal-icon" class="mb-4 text-center"></div>
+                        <h3 id="modal-title" class="text-2xl font-bold mb-4 text-center"></h3>
+                        <p id="modal-message" class="text-gray-700 mb-6 text-center"></p>
+                        <button onclick="closeStatusModal()" class="w-full bg-[var(--color-blue-sky)] text-white font-semibold p-3 rounded-xl hover:bg-blue-700 transition duration-200">
+                            Entendi
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Funções de Manipulação de Estado/Ações ---
+
+        function handleRegistration(event) {
+            event.preventDefault();
+            // Lógica de cadastro mock: Apenas simula o sucesso e navega
+            // const nome = document.getElementById('nome').value;
+            // ... validação aqui ...
+            
+            state.isLoggedIn = true;
+            // Redireciona para a Tela de Pesquisa (4) após o cadastro/login
+            navigate('4');
+            showMessage('Cadastro realizado com sucesso!', 'bg-[var(--color-lime-green)]');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            // Lógica de login mock: Apenas simula o sucesso e navega
+            
+            state.isLoggedIn = true;
+            // Redireciona para a Tela de Pesquisa (4) após o cadastro/login
+            navigate('4');
+            showMessage('Login realizado com sucesso!', 'bg-[var(--color-lime-green)]');
+        }
+
+        function handleLogout() {
+            state.isLoggedIn = false;
+            state.hasNotifications = false;
+            navigate('10'); // Volta para o Perfil (Deslogado)
+            showMessage('Sessão encerrada.', 'bg-[var(--color-coral)]');
+        }
+        
+        function handleAgendamento(event) {
+            event.preventDefault();
+            showMessage('Viagem agendada com sucesso! Você será notificado antes do embarque.', 'bg-[var(--color-lime-green)]');
+            navigate('12'); // Vai para a tela de Notificações
+        }
+
+        function swapSearchFields() {
+            const start = document.getElementById('start-point');
+            const end = document.getElementById('end-point');
+            if (start && end) {
+                const temp = start.value;
+                start.value = end.value;
+                end.value = temp;
+                showMessage('Pontos de partida e destino invertidos.', 'bg-[var(--color-blue-sky)]');
+            }
+        }
+
+        function toggleFavorite(type, id) {
+            if (type === 'point') {
+                const index = state.favorites.points.findIndex(p => p.id === id);
+                if (index > -1) {
+                    state.favorites.points.splice(index, 1);
+                    showMessage('Ponto removido dos favoritos.', 'bg-[var(--color-coral)]');
+                } else {
+                    const point = mockData.pointsList.find(p => p.id === id);
+                    if (point) state.favorites.points.push(point);
+                    showMessage('Ponto adicionado aos favoritos.', 'bg-[var(--color-lime-green)]');
+                }
+            } else if (type === 'line') {
+                const index = state.favorites.lines.findIndex(l => l.id === id);
+                if (index > -1) {
+                    state.favorites.lines.splice(index, 1);
+                    showMessage('Linha removida dos favoritos.', 'bg-[var(--color-coral)]');
+                } else {
+                    const line = mockData.linesList.find(l => l.id === id);
+                    if (line) state.favorites.lines.push(line);
+                    showMessage('Linha adicionada aos favoritos.', 'bg-[var(--color-lime-green)]');
+                }
+            }
+            renderApp(); // Renderiza novamente a tela atual para refletir a mudança
+        }
+        
+        function switchFavoriteTab(tab) {
+            const linhasTab = document.getElementById('tab-linhas');
+            const pontosTab = document.getElementById('tab-pontos');
+            const linhasContent = document.getElementById('favorite-content-linhas');
+            const pontosContent = document.getElementById('favorite-content-pontos');
+
+            if (tab === 'linhas') {
+                linhasTab.classList.remove('text-gray-500', 'border-transparent');
+                linhasTab.classList.add('text-[var(--color-blue-sky)]', 'border-[var(--color-blue-sky)]');
+                pontosTab.classList.add('text-gray-500', 'border-transparent');
+                pontosTab.classList.remove('text-[var(--color-blue-sky)]', 'border-[var(--color-blue-sky)]');
+                linhasContent.classList.remove('hidden');
+                pontosContent.classList.add('hidden');
+            } else {
+                pontosTab.classList.remove('text-gray-500', 'border-transparent');
+                pontosTab.classList.add('text-[var(--color-blue-sky)]', 'border-[var(--color-blue-sky)]');
+                linhasTab.classList.add('text-gray-500', 'border-transparent');
+                linhasTab.classList.remove('text-[var(--color-blue-sky)]', 'border-[var(--color-blue-sky)]');
+                pontosContent.classList.remove('hidden');
+                linhasContent.classList.add('hidden');
+            }
+        }
+        
+        function toggleNotificationDetails(element) {
+            const details = element.querySelector('.notification-details');
+            if (details) {
+                details.classList.toggle('hidden');
+            }
+        }
+
+        // --- Funções de Modal e Mensagens ---
+
+        function showStatusModal(status) {
+            const modal = document.getElementById('status-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalMessage = document.getElementById('modal-message');
+            const modalIcon = document.getElementById('modal-icon');
+            
+            let title = '';
+            let message = '';
+            let iconHtml = '';
+
+            switch (status) {
+                case 'rota':
+                    title = 'Mudança de Rota';
+                    message = 'A linha sofreu uma alteração temporária no seu percurso devido a obras/eventos. Verifique o mapa para o novo trajeto.';
+                    iconHtml = getIcon('Replace', 'w-10 h-10 status-rota');
+                    break;
+                case 'atraso':
+                    title = 'Atraso na Linha';
+                    message = 'A linha está operando com atraso estimado de 5 a 10 minutos devido a congestionamento. Acompanhe a previsão.';
+                    iconHtml = getIcon('Clock', 'w-10 h-10 status-atraso');
+                    break;
+                case 'superlotacao':
+                    title = 'Alta Lotação';
+                    message = 'O veículo está com alto índice de superlotação. Recomenda-se considerar a próxima linha ou horário.';
+                    iconHtml = getIcon('Users', 'w-10 h-10 status-superlotacao');
+                    break;
+                case 'emergencia':
+                    title = 'Alerta de Emergência';
+                    message = 'Foi registrado um evento de emergência nesta linha/ponto. Pedimos que evitem a área ou sigam as instruções das autoridades.';
+                    iconHtml = getIcon('AlertTriangle', 'w-10 h-10 status-emergencia');
+                    break;
+                default:
+                    title = 'Informação';
+                    message = 'Informação geral sobre a linha ou o ponto.';
+                    iconHtml = getIcon('Info', 'w-10 h-10 text-gray-500');
+            }
+
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalIcon.innerHTML = iconHtml;
+            // Re-renderiza ícones do lucide dentro do modal
+            lucide.createIcons();
+            modal.classList.remove('hidden');
+        }
+
+        function closeStatusModal() {
+            document.getElementById('status-modal').classList.add('hidden');
+        }
+
+        // Simula a exibição de uma mensagem toast ou notificação
+        function showMessage(text, colorClass) {
+            const container = document.body;
+            let messageBox = document.getElementById('app-message');
+            if (!messageBox) {
+                messageBox = document.createElement('div');
+                messageBox.id = 'app-message';
+                messageBox.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 p-4 rounded-xl text-white font-semibold shadow-lg transition-opacity duration-300 z-[60] opacity-0';
+                container.appendChild(messageBox);
+            }
+
+            messageBox.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 p-4 rounded-xl text-white font-semibold shadow-lg transition-opacity duration-300 z-[60] ${colorClass} opacity-100`;
+            messageBox.textContent = text;
+
+            clearTimeout(messageBox.timer);
+            messageBox.timer = setTimeout(() => {
+                messageBox.classList.remove('opacity-100');
+                messageBox.classList.add('opacity-0');
+            }, 3000);
+        }
+
+        // Função de Renderização Principal
+        function renderApp(detailId = null) {
+            const contentDiv = document.getElementById('content');
+            let contentHTML = '';
+
+            switch (state.currentView) {
+                case '1': contentHTML = renderCadastro(); break;
+                case '2': contentHTML = renderLogin(); break;
+                case '3': contentHTML = renderInicial(); break;
+                case '4': contentHTML = renderPesquisa(); break;
+                case '5': contentHTML = renderPontos(); break;
+                case '6': contentHTML = renderPontoDetalhe(detailId); break; // Usa detailId
+                case '7': contentHTML = renderLinhas(); break;
+                case '8': contentHTML = renderLinhaDetalhe(detailId); break; // Usa detailId
+                case '9': contentHTML = renderPasses(); break;
+                case '10': contentHTML = renderPerfil(); break;
+                case '11': 
+                    if (!state.isLoggedIn) { navigate('10'); return; }
+                    contentHTML = renderInfoConta(); 
+                    break;
+                case '12': 
+                    if (!state.isLoggedIn) { navigate('10'); return; }
+                    contentHTML = renderNotificacoes(); 
+                    break;
+                case '13': 
+                    if (!state.isLoggedIn) { navigate('10'); return; }
+                    contentHTML = renderFavoritos(); 
+                    break;
+                case '14': 
+                    if (!state.isLoggedIn) { navigate('10'); return; }
+                    contentHTML = renderAgendamento(); 
+                    break;
+                case '15': contentHTML = renderSobre(); break;
+                default: contentHTML = renderInicial(); // Default para tela 3
+            }
+
+            contentDiv.innerHTML = contentHTML;
+
+            // Atualiza o indicador de notificação
+            const dot = document.getElementById('notification-dot');
+            if (dot) {
+                if (state.hasNotifications && state.isLoggedIn) {
+                    dot.classList.remove('hidden');
+                } else {
+                    dot.classList.add('hidden');
+                }
+            }
+            
+            // Re-renderiza ícones do lucide
+            lucide.createIcons();
+            // Volta para o topo da página ao mudar de tela (experiência desktop)
+            window.scrollTo(0, 0);
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verifica a hash na URL para iniciar na tela correta
+            const hash = window.location.hash.substring(1);
+            const viewId = Object.keys(viewMap).find(key => viewMap[key] === hash) || '3';
+            state.currentView = viewId;
+            renderApp();
+        });
+        
+        const viewMap = {
+            '1': 'cadastro', '2': 'login', '3': 'inicial', '4': 'pesquisa', '5': 'pontos',
+            '6': 'ponto_detalhe', '7': 'linhas', '8': 'linha_detalhe', '9': 'passes', '10': 'perfil',
+            '11': 'info_conta', '12': 'notificacoes', '13': 'favoritos', '14': 'agendamento', '15': 'sobre'
+        };
+        
+    </script>
+</body>
+</html>
